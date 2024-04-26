@@ -61,14 +61,14 @@ final class PhpLanguageGenerator implements LanguageGenerator
 	protected function blockStart(ContentBuilder $builder, Block $block): void
 	{
 		if ($block instanceof SectionBlock) {
-			$builder->ln(sprintf('/*** %s ***/', $block->name));
+			SectionBlock::startPrint($builder, $block);
 		}
 	}
 
 	protected function blockEnd(ContentBuilder $builder, Block $block): void
 	{
 		if ($block instanceof SectionBlock) {
-			$builder->ln(sprintf('/*** / %s ***/', $block->name));
+			SectionBlock::endPrint($builder, $block);
 		}
 	}
 

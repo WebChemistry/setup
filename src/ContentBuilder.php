@@ -11,6 +11,8 @@ final class ContentBuilder
 
 	private int $level = 0;
 
+	private int $newLines = 0;
+
 	/** @var list<string> */
 	private array $comments = [];
 
@@ -52,6 +54,7 @@ final class ContentBuilder
 	{
 		$this->content .= ($this->autoIndent ? $this->createIndent() : '') . $content;
 
+		$this->newLines = 0;
 		$this->autoIndent = false;
 
 		return $this;
@@ -76,7 +79,21 @@ final class ContentBuilder
 	{
 		$this->content .= ($this->autoIndent ? $this->createIndent() : '') . $content . str_repeat("\n", $numberOfLines);
 
+		$this->newLines = $numberOfLines;
 		$this->autoIndent = true;
+
+		return $this;
+	}
+
+	public function forceNewLine(int $numberOfLines): self
+	{
+		$numberOfLines = $numberOfLines - $this->newLines;
+
+		if ($numberOfLines > 0) {
+			$this->newLine($numberOfLines);
+		} else if ($numberOfLines < 0) {
+			$this->content = substr($this->content, 0, $numberOfLines);
+		}
 
 		return $this;
 	}
@@ -85,6 +102,7 @@ final class ContentBuilder
 	{
 		$this->content .= str_repeat("\n", $numberOfLines);
 
+		$this->newLines = $numberOfLines;
 		$this->autoIndent = true;
 
 		return $this;
@@ -98,6 +116,7 @@ final class ContentBuilder
 
 		$this->content .= str_repeat("\n", $numberOfLines);
 
+		$this->newLines = $numberOfLines;
 		$this->autoIndent = true;
 
 		return $this;

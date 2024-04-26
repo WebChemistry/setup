@@ -3,6 +3,7 @@
 namespace WebChemistry\Setup\Block;
 
 use WebChemistry\Setup\Block;
+use WebChemistry\Setup\ContentBuilder;
 
 final class SectionBlock implements Block
 {
@@ -49,6 +50,19 @@ final class SectionBlock implements Block
 			...$values,
 			self::end(),
 		];
+	}
+
+	public static function startPrint(ContentBuilder $builder, self $block): void
+	{
+		$builder->forceNewLine(2);
+		$builder->ln(sprintf('// --- %s --- //', $block->name));
+	}
+
+	public static function endPrint(ContentBuilder $builder, self $block): void
+	{
+		$builder->forceNewLine(1);
+		$builder->ln(sprintf('// --- / %s --- //', $block->name));
+		$builder->newLine(2);
 	}
 
 }
