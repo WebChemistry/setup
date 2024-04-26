@@ -13,12 +13,12 @@ use WebChemistry\Setup\LanguageGenerator;
 use WebChemistry\Setup\Setup;
 use WebChemistry\Setup\SetupCallables;
 
-final class PhpLanguageGenerator implements LanguageGenerator
+final class JsLanguageGenerator implements LanguageGenerator
 {
 
 	public function getLanguage(): string
 	{
-		return 'php';
+		return 'js';
 	}
 
 	/**
@@ -28,19 +28,13 @@ final class PhpLanguageGenerator implements LanguageGenerator
 	{
 		$builder = new ContentBuilder();
 
-		$builder->ln('<?php declare(strict_types = 1);', 2);
 		$builder->ln('/* This file is auto-generated. Do not edit! */', 2);
 
-		if (is_string($namespace = $options['namespace'] ?? null)) {
-			$builder->ln(sprintf('namespace %s;', $namespace), 2);
+		if (!is_string($name = $options['name'] ?? null)) {
+			throw new InvalidArgumentException('Missing name.');
 		}
 
-		if (!is_string($class = $options['name'] ?? null)) {
-			throw new InvalidArgumentException('Missing class name.');
-		}
-
-		$builder->ln(sprintf('final class %s', $class));
-		$builder->ln('{');
+		$builder->ln(sprintf('export const %s = {', $name));
 		$builder->increaseLevel();
 
 		$setup->getVariables()->forEach(
@@ -53,7 +47,7 @@ final class PhpLanguageGenerator implements LanguageGenerator
 		);
 
 		$builder->decreaseLevel();
-		$builder->ln('}');
+		$builder->ln('};');
 
 		return $builder->getContent();
 	}
@@ -90,7 +84,7 @@ final class PhpLanguageGenerator implements LanguageGenerator
 		$name = implode('', array_map(Strings::firstUpper(...), $path));
 
 		$builder->getCommentsAndFlush();
-		$builder->ln(sprintf('public const %s = %s;', $name, var_export($value, true)));
+		$builder->ln(sprintf('%s: %s,', $name, var_export($value, true)));
 	}
 
 }
