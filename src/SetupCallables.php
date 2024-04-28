@@ -5,7 +5,7 @@ namespace WebChemistry\Setup;
 final class SetupCallables
 {
 
-	/** @var (callable(Directive $directive): void)|null */
+	/** @var (callable(Directive<mixed> $directive): void)|null */
 	private $onDirective;
 
 	/** @var (callable(Block $block): void)|null */
@@ -15,7 +15,7 @@ final class SetupCallables
 	private $onEndBlock;
 
 	/**
-	 * @param (callable(Directive $directive): void)|null $onDirective
+	 * @param (callable(Directive<mixed> $directive): void)|null $onDirective
 	 * @param (callable(Block $block): void)|null $onStartBlock
 	 * @param (callable(Block $block): void)|null $onEndBlock
 	 */
@@ -31,7 +31,7 @@ final class SetupCallables
 	}
 
 	/**
-	 * @param Directive $directive
+	 * @param Directive<mixed> $directive
 	 */
 	public function callOnDirective(Directive $directive): void
 	{

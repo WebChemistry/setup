@@ -4,6 +4,9 @@ namespace WebChemistry\Setup\Directives;
 
 use WebChemistry\Setup\Directive;
 
+/**
+ * @extends Directive<mixed>
+ */
 final class DeprecatedDirective extends Directive
 {
 

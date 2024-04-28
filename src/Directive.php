@@ -2,13 +2,19 @@
 
 namespace WebChemistry\Setup;
 
+/**
+ * @template T of mixed
+ */
 abstract class Directive
 {
 
 	protected readonly DirectiveMetadata $metadata;
 
+	/**
+	 * @param T $value
+	 */
 	public function __construct(
-		private mixed $value,
+		protected readonly mixed $value,
 	)
 	{
 		$this->metadata = new DirectiveMetadata();
@@ -24,7 +30,7 @@ abstract class Directive
 	}
 
 	/**
-	 * @return Directive[]
+	 * @return Directive<mixed>[]
 	 */
 	public function getDirectives(): array
 	{
@@ -35,10 +41,13 @@ abstract class Directive
 		return [$this];
 	}
 
-	public function getValue(): mixed
+	/**
+	 * @return T|FlattenValue<T>
+	 */
+	public function getValue(string $key): mixed
 	{
 		if ($this->value instanceof self) {
-			return $this->value->getValue();
+			return $this->value->getValue($key);
 		}
 
 		return $this->value;

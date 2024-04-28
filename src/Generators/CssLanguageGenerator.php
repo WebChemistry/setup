@@ -57,6 +57,9 @@ class CssLanguageGenerator implements LanguageGenerator
 		}
 	}
 
+	/**
+	 * @param Directive<mixed> $directive
+	 */
 	protected function directive(ContentBuilder $builder, Directive $directive): void
 	{
 		$metadata = $directive->getMetadata();

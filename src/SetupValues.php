@@ -70,16 +70,24 @@ final class SetupValues
 			}
 
 			if ($value instanceof Directive) {
-				$value = $this->processDirectives($value, $callables);
+				$value = $this->processDirectives($key, $value, $callables);
 			}
 
 			if ($value === null) {
 				continue;
 			}
 
-
 			if (is_array($value)) {
 				$this->_forEach($foreach, $value, $callables, $newPath);
+			} else if ($value instanceof FlattenValue) {
+				foreach ($value->values as $newKey => $newValue) {
+					if (!is_scalar($newValue)) {
+						throw new LogicException(sprintf('Value at %s is not scalar.', implode(' > ', ['root', ...$newPath])));
+					}
+
+					$foreach($newValue, [...$path, $newKey]);
+				}
+
 			} else {
 				if (is_object($value)) {
 					if ($value instanceof Stringable) {
@@ -98,9 +106,12 @@ final class SetupValues
 		}
 	}
 
-	private function processDirectives(Directive $directive, SetupCallables $callables): mixed
+	/**
+	 * @param Directive<mixed> $directive
+	 */
+	private function processDirectives(string $key, Directive $directive, SetupCallables $callables): mixed
 	{
-		$value = $directive->getValue();
+		$value = $directive->getValue($key);
 
 		if ($value === null) {
 			return null;
