@@ -206,6 +206,20 @@ class Color implements Stringable
 	}
 
 	/**
+	 * @return array<string, int>
+	 */
+	public function expandHsl(string $prefix, string $hue = 'H', string $saturation = 'S', string $lightness = 'L'): array
+	{
+		[$h, $s, $l] = $this->toHslValues();
+
+		return [
+			$prefix . $hue => $h,
+			$prefix . $saturation => $s,
+			$prefix . $lightness => $l,
+		];
+	}
+
+	/**
 	 * @return array{int, int, int}
 	 */
 	public function toRgbValues(): array
@@ -257,6 +271,20 @@ class Color implements Stringable
 		}
 
 		return [(int) round($hue), (int) round($saturation * 100), (int) round($lightness * 100)];
+	}
+
+	/**
+	 * @return array<string, int>
+	 */
+	public function expandRgb(string $prefix, string $red = 'R', string $green = 'G', string $blue = 'B'): array
+	{
+		[$r, $g, $b] = $this->toRgbValues();
+
+		return [
+			$prefix . $red => $r,
+			$prefix . $green => $g,
+			$prefix . $blue => $b,
+		];
 	}
 
 	public function __toString(): string
