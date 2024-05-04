@@ -2,10 +2,14 @@
 
 namespace WebChemistry\Setup;
 
+use WebChemistry\Setup\Helper\SetupHelper;
+
 final class Setup
 {
 
 	public readonly SetupDirectives $directives;
+
+	public readonly SetupHelper $helper;
 
 	/** @var mixed[] */
 	private array $variables = [];
@@ -13,6 +17,7 @@ final class Setup
 	public function __construct()
 	{
 		$this->directives = new SetupDirectives();
+		$this->helper = new SetupHelper();
 	}
 
 	/**
