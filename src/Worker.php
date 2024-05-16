@@ -74,7 +74,7 @@ final class Worker
 		foreach ($setupOutput->getOutputs() as $output) {
 			$generator = $this->getGenerator($output['language']);
 
-			$fn($setup = new Setup(), new SetupContext($output['language']));
+			$fn($setup = new Setup(), new SetupContext($output['language'], $output['id']));
 
 			FileSystem::write($output['output'], $generator->generate($setup, $output['options']));
 		}
