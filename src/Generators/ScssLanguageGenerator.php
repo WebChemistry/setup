@@ -26,7 +26,10 @@ final class ScssLanguageGenerator extends CssLanguageGenerator
 		$builder->ln(sprintf('$%s: %s;', $name, $value));
 	}
 
-	protected function start(ContentBuilder $builder): void
+	/**
+	 * @param mixed[] $options
+	 */
+	protected function start(ContentBuilder $builder, array $options): void
 	{
 	}
 

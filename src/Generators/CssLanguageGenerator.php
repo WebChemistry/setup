@@ -27,7 +27,7 @@ class CssLanguageGenerator implements LanguageGenerator
 	{
 		$builder = new ContentBuilder();
 
-		$this->start($builder);
+		$this->start($builder, $options);
 
 		$setup->getVariables()->forEach(
 			fn (string|int|float|bool $value, array $path) => $this->value($builder, $value, $path),
@@ -81,9 +81,15 @@ class CssLanguageGenerator implements LanguageGenerator
 		$builder->ln(sprintf('--%s: %s;', $name, $value));
 	}
 
-	protected function start(ContentBuilder $builder): void
+	/**
+	 * @param mixed[] $options
+	 */
+	protected function start(ContentBuilder $builder, array $options): void
 	{
-		$builder->ln(':root {');
+		$selector = $options['selector'] ?? null;
+		$selector = is_string($selector) ? $selector : ':root';
+
+		$builder->ln($selector . ' {');
 		$builder->increaseLevel();
 	}
 
