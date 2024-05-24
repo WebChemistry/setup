@@ -90,7 +90,7 @@ final class DotEnvLanguageGenerator implements LanguageGenerator
 			$val = '0';
 		}
 
-		$builder->ln(sprintf('%s=%s;', $name, $val));
+		$builder->ln(sprintf('%s=%s', $name, $val));
 	}
 
 }
