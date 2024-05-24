@@ -5,11 +5,11 @@ namespace WebChemistry\Setup;
 final class SetupOutput
 {
 
-	/** @var array{ language: string, output: string, options: mixed[], id: string|null }[] */
+	/** @var array{ language: string, output: string, options: mixed[], id: string|null, groups: string[] }[] */
 	private array $outputs = [];
 
 	/**
-	 * @return array{ language: string, output: string, options: mixed[], id: string|null }[]
+	 * @return array{ language: string, output: string, options: mixed[], id: string|null, groups: string[] }[]
 	 */
 	public function getOutputs(): array
 	{
@@ -18,13 +18,15 @@ final class SetupOutput
 
 	/**
 	 * @param mixed[] $options
+	 * @param string[] $groups
 	 */
-	public function addOutput(string $language, string $output, array $options = [], ?string $id = null): self
+	public function addOutput(string $language, string $output, array $options = [], ?string $id = null, array $groups = []): self
 	{
 		$this->outputs[] = [
 			'language' => $language,
 			'output' => $output,
 			'options' => $options,
+			'groups' => $groups,
 			'id' => $id,
 		];
 

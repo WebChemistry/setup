@@ -4,14 +4,20 @@ namespace WebChemistry\Setup;
 
 use JetBrains\PhpStorm\ExpectedValues;
 use WebChemistry\Setup\Directives\ColorAlterDirective;
+use WebChemistry\Setup\Directives\CommentDirective;
 use WebChemistry\Setup\Directives\DeprecatedDirective;
 
 final class SetupDirectives
 {
 
-	public function deprecated(mixed $value, string $name = ''): DeprecatedDirective
+	public function deprecated(mixed $value, string $comment = ''): DeprecatedDirective
 	{
-		return new DeprecatedDirective($value, $name);
+		return new DeprecatedDirective($value, $comment);
+	}
+
+	public function comment(mixed $value, string $comment = ''): CommentDirective
+	{
+		return new CommentDirective($value, $comment);
 	}
 
 	/**

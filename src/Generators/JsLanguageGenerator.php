@@ -30,11 +30,16 @@ final class JsLanguageGenerator implements LanguageGenerator
 
 		$builder->ln('/* This file is auto-generated. Do not edit! */', 2);
 
-		if (!is_string($name = $options['name'] ?? null)) {
-			throw new InvalidArgumentException('Missing name.');
+		if (($options['type'] ?? null) !== 'commonjs') {
+			if (!is_string($name = $options['name'] ?? null)) {
+				throw new InvalidArgumentException('Missing name.');
+			}
+
+			$builder->ln(sprintf('export const %s = {', $name));
+		} else {
+			$builder->ln('module.exports = {');
 		}
 
-		$builder->ln(sprintf('export const %s = {', $name));
 		$builder->increaseLevel();
 
 		$setup->getVariables()->forEach(
