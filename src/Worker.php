@@ -5,6 +5,7 @@ namespace WebChemistry\Setup;
 use InvalidArgumentException;
 use Nette\Utils\FileSystem;
 use WebChemistry\Setup\Generators\CssLanguageGenerator;
+use WebChemistry\Setup\Generators\DotEnvLanguageGenerator;
 use WebChemistry\Setup\Generators\JsLanguageGenerator;
 use WebChemistry\Setup\Generators\PhpLanguageGenerator;
 use WebChemistry\Setup\Generators\ScssLanguageGenerator;
@@ -22,6 +23,7 @@ final class Worker
 			new ScssLanguageGenerator(),
 			new PhpLanguageGenerator(),
 			new JsLanguageGenerator(),
+			new DotEnvLanguageGenerator(),
 		];
 	}
 

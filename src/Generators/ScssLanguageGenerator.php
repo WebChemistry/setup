@@ -22,7 +22,6 @@ final class ScssLanguageGenerator extends CssLanguageGenerator
 		BuilderHelper::flushMultilineComments($builder);
 		$name = implode('-', array_map(StringCaseHelper::camelToDash(...), $path));
 
-		$builder->getCommentsAndFlush();
 		$builder->ln(sprintf('$%s: %s;', $name, $value));
 	}
 

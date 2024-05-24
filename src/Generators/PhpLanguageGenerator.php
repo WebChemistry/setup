@@ -92,7 +92,6 @@ final class PhpLanguageGenerator implements LanguageGenerator
 		BuilderHelper::flushMultilineComments($builder);
 		$name = implode('', array_map(Strings::firstUpper(...), $path));
 
-		$builder->getCommentsAndFlush();
 		$builder->ln(sprintf('public const %s = %s;', $name, var_export($value, true)));
 	}
 

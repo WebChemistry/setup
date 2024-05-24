@@ -91,7 +91,6 @@ final class JsLanguageGenerator implements LanguageGenerator
 		BuilderHelper::flushMultilineComments($builder);
 		$name = implode('', array_map(Strings::firstUpper(...), $path));
 
-		$builder->getCommentsAndFlush();
 		$builder->ln(sprintf('%s: %s,', $name, var_export($value, true)));
 	}
 

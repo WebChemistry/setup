@@ -52,16 +52,16 @@ final class SectionBlock implements Block
 		];
 	}
 
-	public static function startPrint(ContentBuilder $builder, self $block): void
+	public static function startPrint(ContentBuilder $builder, self $block, string $comment = '//'): void
 	{
 		$builder->forceNewLine(2);
-		$builder->ln(sprintf('// --- %s --- //', $block->name));
+		$builder->ln(sprintf('%s --- %s --- %s', $comment, $block->name, $comment));
 	}
 
-	public static function endPrint(ContentBuilder $builder, self $block): void
+	public static function endPrint(ContentBuilder $builder, self $block, string $comment = '//'): void
 	{
 		$builder->forceNewLine(1);
-		$builder->ln(sprintf('// --- / %s --- //', $block->name));
+		$builder->ln(sprintf('%s --- / %s --- %s', $comment, $block->name, $comment));
 		$builder->newLine(2);
 	}
 

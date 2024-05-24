@@ -2,6 +2,8 @@
 
 namespace WebChemistry\Setup;
 
+use WebChemistry\Setup\Helper\BuilderHelper;
+
 final class ContentBuilder
 {
 
@@ -52,10 +54,11 @@ final class ContentBuilder
 
 	public function append(string $content): self
 	{
-		$this->content .= ($this->autoIndent ? $this->createIndent() : '') . $content;
+		$newLines = BuilderHelper::countNewLines($content);
 
-		$this->newLines = 0;
-		$this->autoIndent = false;
+		$this->content .= ($this->autoIndent ? $this->createIndent() : '') . $content;
+		$this->newLines = $newLines;
+		$this->autoIndent = $newLines > 0;
 
 		return $this;
 	}

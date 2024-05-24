@@ -2,22 +2,23 @@
 
 namespace WebChemistry\Setup\Generators;
 
+use InvalidArgumentException;
+use WebChemistry\Setup\Block;
 use WebChemistry\Setup\Block\SectionBlock;
 use WebChemistry\Setup\ContentBuilder;
 use WebChemistry\Setup\Directive;
 use WebChemistry\Setup\Helper\BuilderHelper;
 use WebChemistry\Setup\Helper\StringCaseHelper;
-use WebChemistry\Setup\Block;
 use WebChemistry\Setup\LanguageGenerator;
 use WebChemistry\Setup\Setup;
 use WebChemistry\Setup\SetupCallables;
 
-class CssLanguageGenerator implements LanguageGenerator
+final class DotEnvLanguageGenerator implements LanguageGenerator
 {
 
 	public function getLanguage(): string
 	{
-		return 'css';
+		return 'dotenv';
 	}
 
 	/**
@@ -27,10 +28,14 @@ class CssLanguageGenerator implements LanguageGenerator
 	{
 		$builder = new ContentBuilder();
 
-		$this->start($builder, $options);
+		$prefix = $options['prefix'] ?? '';
+
+		if (!is_string($prefix)) {
+			throw new InvalidArgumentException('Prefix must be a string.');
+		}
 
 		$setup->getVariables()->forEach(
-			fn (string|int|float|bool $value, array $path) => $this->value($builder, $value, $path),
+			fn (string|int|float|bool $value, array $path) => $this->value($builder, $value, $path, $prefix),
 			new SetupCallables(
 				onDirective: fn (Directive $directive) => $this->directive($builder, $directive),
 				onStartBlock: fn (Block $block) => $this->blockStart($builder, $block),
@@ -38,22 +43,20 @@ class CssLanguageGenerator implements LanguageGenerator
 			),
 		);
 
-		$this->end($builder);
-
-		return $builder->getContent();
+		return trim($builder->getContent());
 	}
 
 	protected function blockStart(ContentBuilder $builder, Block $block): void
 	{
 		if ($block instanceof SectionBlock) {
-			SectionBlock::startPrint($builder, $block);
+			SectionBlock::startPrint($builder, $block, '#');
 		}
 	}
 
 	protected function blockEnd(ContentBuilder $builder, Block $block): void
 	{
 		if ($block instanceof SectionBlock) {
-			SectionBlock::endPrint($builder, $block);
+			SectionBlock::endPrint($builder, $block, '#');
 		}
 	}
 
@@ -72,30 +75,22 @@ class CssLanguageGenerator implements LanguageGenerator
 	/**
 	 * @param string[] $path
 	 */
-	protected function value(ContentBuilder $builder, string|int|float|bool $value, array $path): void
+	protected function value(ContentBuilder $builder, string|int|float|bool $value, array $path, string $prefix): void
 	{
-		BuilderHelper::flushMultilineComments($builder);
-		$name = implode('-', array_map(StringCaseHelper::camelToDash(...), $path));
+		BuilderHelper::flushCustomLineComments($builder, '# ');
+		$name = $prefix . implode('_', array_map(fn (string $str) => strtoupper(StringCaseHelper::camelToUnderscore($str)), $path));
 
-		$builder->ln(sprintf('--%s: %s;', $name, $value));
-	}
+		$val = var_export($value, true);
 
-	/**
-	 * @param mixed[] $options
-	 */
-	protected function start(ContentBuilder $builder, array $options): void
-	{
-		$selector = $options['selector'] ?? null;
-		$selector = is_string($selector) ? $selector : ':root';
+		if ($val === 'NULL') {
+			$val = "''";
+		} else if ($val === 'true') {
+			$val = '1';
+		} else if ($val === 'false') {
+			$val = '0';
+		}
 
-		$builder->ln($selector . ' {');
-		$builder->increaseLevel();
-	}
-
-	protected function end(ContentBuilder $builder): void
-	{
-		$builder->decreaseLevel();
-		$builder->ln('}');
+		$builder->ln(sprintf('%s=%s;', $name, $val));
 	}
 
 }
