@@ -9,6 +9,7 @@ use WebChemistry\Setup\Generators\CssLanguageGenerator;
 use WebChemistry\Setup\Generators\DotEnvLanguageGenerator;
 use WebChemistry\Setup\Generators\JsLanguageGenerator;
 use WebChemistry\Setup\Generators\PhpLanguageGenerator;
+use WebChemistry\Setup\Generators\ScssVarListLanguageGenerator;
 use WebChemistry\Setup\Generators\ScssLanguageGenerator;
 use WebChemistry\Setup\Helper\SetupHelper;
 use WebChemistry\Setup\Variant\Variants;
@@ -44,6 +45,7 @@ final class Setup
 			new PhpLanguageGenerator(),
 			new JsLanguageGenerator(),
 			new DotEnvLanguageGenerator(),
+			new ScssVarListLanguageGenerator(),
 		];
 
 		$onRun($this->work(...));
