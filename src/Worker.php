@@ -2,30 +2,8 @@
 
 namespace WebChemistry\Setup;
 
-use InvalidArgumentException;
-use Nette\Utils\FileSystem;
-use WebChemistry\Setup\Generators\CssLanguageGenerator;
-use WebChemistry\Setup\Generators\DotEnvLanguageGenerator;
-use WebChemistry\Setup\Generators\JsLanguageGenerator;
-use WebChemistry\Setup\Generators\PhpLanguageGenerator;
-use WebChemistry\Setup\Generators\ScssLanguageGenerator;
-
 final class Worker
 {
-
-	/** @var LanguageGenerator[] */
-	private array $generators;
-
-	public function __construct()
-	{
-		$this->generators = [
-			new CssLanguageGenerator(),
-			new ScssLanguageGenerator(),
-			new PhpLanguageGenerator(),
-			new JsLanguageGenerator(),
-			new DotEnvLanguageGenerator(),
-		];
-	}
 
 	/**
 	 * @param non-empty-list<string> $arguments
@@ -65,37 +43,25 @@ final class Worker
 	}
 
 	/**
-	 * @param callable(SetupOutput $output): (callable(Setup $setup, SetupContext $context): void)  $callback
+	 * @param callable(Setup $setup): void  $callback
 	 */
 	public function run(callable $callback): void
 	{
-		$setupOutput = new SetupOutput();
+		$callbacks = [];
+		$exec = function (callable $fn) use (&$callbacks): void {
+			$callbacks[] = $fn;
+		};
 
-		$fn = $callback($setupOutput);
+		$callback(new Setup($exec));
 
-		foreach ($setupOutput->getOutputs() as $output) {
-			$generator = $this->getGenerator($output['language']);
-
-			$fn($setup = new Setup(), new SetupContext($output['language'], $output['id'], $output['groups']));
-
-			FileSystem::write($output['output'], $generator->generate($setup, $output['options']));
+		foreach ($callbacks as $callback) {
+			$callback();
 		}
 	}
 
 	public function runFile(string $file): void
 	{
 		$this->run(require $file);
-	}
-
-	private function getGenerator(string $language): LanguageGenerator
-	{
-		foreach ($this->generators as $generator) {
-			if ($generator->getLanguage() === $language) {
-				return $generator;
-			}
-		}
-
-		throw new InvalidArgumentException(sprintf('Generator for language %s not found.', $language));
 	}
 
 }

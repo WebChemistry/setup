@@ -5,7 +5,6 @@ namespace WebChemistry\Setup\Directives;
 use JetBrains\PhpStorm\ExpectedValues;
 use LogicException;
 use WebChemistry\Setup\Directive;
-use WebChemistry\Setup\FlattenValue;
 use WebChemistry\Setup\UI\Color;
 
 /**
@@ -28,7 +27,7 @@ final class ColorAlterDirective extends Directive
 		parent::__construct($value);
 	}
 
-	public function getValue(string $key): mixed
+	public function getValues(string $key): array
 	{
 		$colors = [
 			$key => $this->value,
@@ -40,7 +39,7 @@ final class ColorAlterDirective extends Directive
 			$colors[$key . ucfirst($name)] = $this->toFormat($format);
 		}
 
-		return new FlattenValue($colors);
+		return $colors;
 	}
 
 	private function toFormat(string $format): string

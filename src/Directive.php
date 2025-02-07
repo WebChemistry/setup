@@ -3,12 +3,10 @@
 namespace WebChemistry\Setup;
 
 /**
- * @template T of mixed
+ * @template T
  */
 abstract class Directive
 {
-
-	protected readonly DirectiveMetadata $metadata;
 
 	/**
 	 * @param T $value
@@ -17,16 +15,6 @@ abstract class Directive
 		protected readonly mixed $value,
 	)
 	{
-		$this->metadata = new DirectiveMetadata();
-	}
-
-	public function getMetadata(): DirectiveMetadata
-	{
-		if ($this->value instanceof self) {
-			return $this->metadata->merge($this->value->getMetadata());
-		}
-
-		return $this->metadata;
 	}
 
 	/**
@@ -42,15 +30,41 @@ abstract class Directive
 	}
 
 	/**
-	 * @return T|FlattenValue<T>
+	 * @return mixed[]
 	 */
-	public function getValue(string $key): mixed
+	public function before(): array
+	{
+		return [];
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	public function getValues(string $key): array
 	{
 		if ($this->value instanceof self) {
-			return $this->value->getValue($key);
+			return $this->value->getValues($key);
 		}
 
-		return $this->value;
+		return [$key => $this->value];
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	public function after(): array
+	{
+		return [];
+	}
+
+	public function isCorrect(SetupContext $context): bool
+	{
+		return true;
+	}
+
+	protected function modifier(string $key, string $modifier): string
+	{
+		return $key . '#' . $modifier;
 	}
 
 }

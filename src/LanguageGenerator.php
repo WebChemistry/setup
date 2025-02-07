@@ -10,6 +10,6 @@ interface LanguageGenerator
 	/**
 	 * @param mixed[] $options
 	 */
-	public function generate(Setup $setup, array $options = []): string;
+	public function generate(SetupValues $values, array $options = []): string;
 
 }

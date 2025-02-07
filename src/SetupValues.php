@@ -8,69 +8,36 @@ use Stringable;
 final class SetupValues
 {
 
-	/** @var Block[] */
-	private array $blockStack = [];
-
 	/**
 	 * @param mixed[] $values
 	 */
 	public function __construct(
 		private array $values,
+		private SetupContext $context,
 	)
 	{
 	}
 
 	/**
-	 * @param callable(string|int|float|bool $value, string[] $path): void $foreach
+	 * @param callable(string|int|float|bool $value, VariablePath $path): void $foreach
 	 */
-	public function forEach(callable $foreach, SetupCallables $callables): void
+	public function forEach(ContentBuilder $builder, callable $foreach): void
 	{
-		$this->blockStack = [];
-
-		$this->_forEach($foreach, $this->values, $callables);
+		$this->_forEach($builder, $foreach, $this->values);
 	}
 
 	/**
-	 * @param callable(string|int|float|bool $value, string[] $path): void $foreach
+	 * @param callable(string|int|float|bool $value, VariablePath $path): void $foreach
 	 * @param mixed[] $values
 	 * @param string[] $path
 	 */
-	private function _forEach(callable $foreach, array $values, SetupCallables $callables, array $path = []): void
+	private function _forEach(ContentBuilder $builder, callable $foreach, array $values, array $path = []): void
 	{
 		foreach ($values as $key => $value) {
 			$newPath = [...$path, $key];
 
-			if ($value instanceof Block) {
-				if ($value->isEnd()) {
-					$lastBlock = array_pop($this->blockStack);
-					if (!$lastBlock) {
-						throw new LogicException(
-							sprintf(
-								'Cannot use end block %s without start block at %s.',
-								$value::class,
-								implode(' > ', ['root', ...$newPath]),
-							),
-						);
-					}
-
-					if (!$lastBlock->isCorrectEnd($value)) {
-						throw new LogicException(sprintf('Block %s is not closed at %s.', $lastBlock::class, implode(' > ', ['root', ...$newPath])));
-					}
-
-					$callables->callOnEndBlock($lastBlock);
-
-					continue;
-				} else {
-					$this->blockStack[] = $value;
-
-					$callables->callOnStartBlock($value);
-				}
-
-				continue;
-			}
-
 			if ($value instanceof Directive) {
-				$value = $this->processDirectives($key, $value, $callables);
+				$value = $this->processDirectives($key, $value);
 			}
 
 			if ($value === null) {
@@ -78,16 +45,11 @@ final class SetupValues
 			}
 
 			if (is_array($value)) {
-				$this->_forEach($foreach, $value, $callables, $newPath);
+				$this->_forEach($builder, $foreach, $value, $newPath);
 			} else if ($value instanceof FlattenValue) {
-				foreach ($value->values as $newKey => $newValue) {
-					if (!is_scalar($newValue)) {
-						throw new LogicException(sprintf('Value at %s is not scalar.', implode(' > ', ['root', ...$newPath])));
-					}
-
-					$foreach($newValue, [...$path, $newKey]);
-				}
-
+				$this->_forEach($builder, $foreach, $value->values, $path);
+			} else if ($value instanceof TemplateValue) {
+				$value->call($builder);
 			} else {
 				if (is_object($value)) {
 					if ($value instanceof Stringable) {
@@ -101,27 +63,32 @@ final class SetupValues
 					throw new LogicException(sprintf('Value at %s is not scalar.', implode(' > ', ['root', ...$newPath])));
 				}
 
-				$foreach($value, $newPath);
+				$foreach($value, new VariablePath($newPath));
 			}
 		}
 	}
 
 	/**
 	 * @param Directive<mixed> $directive
+	 * @return FlattenValue<mixed>|null
 	 */
-	private function processDirectives(string $key, Directive $directive, SetupCallables $callables): mixed
+	private function processDirectives(string $key, Directive $directive): ?FlattenValue
 	{
-		$value = $directive->getValue($key);
-
-		if ($value === null) {
+		if (!$directive->isCorrect($this->context)) {
 			return null;
 		}
 
-		foreach ($directive->getDirectives() as $directive) {
-			$callables->callOnDirective($directive);
+		$values = [
+			...$directive->before(),
+			...$directive->getValues($key),
+			...$directive->after(),
+		];
+
+		if (!$values) {
+			return null;
 		}
 
-		return $value;
+		return new FlattenValue($values);
 	}
 
 }

@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Setup;
 
+use InvalidArgumentException;
 use WebChemistry\Setup\Helper\BuilderHelper;
 
 final class ContentBuilder
@@ -19,9 +20,21 @@ final class ContentBuilder
 	private array $comments = [];
 
 	public function __construct(
+		private string $inlineComment = '//',
 		private string $indent = "\t",
 	)
 	{
+	}
+
+	public function inlineComment(string $comment): self
+	{
+		if (str_contains($comment, "\n")) {
+			throw new InvalidArgumentException('Inline comment must not contain new lines.');
+		}
+
+		$this->ln($this->inlineComment . ' ' . $comment);
+
+		return $this;
 	}
 
 	public function comment(string $comment): self

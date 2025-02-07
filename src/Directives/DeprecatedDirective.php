@@ -2,7 +2,9 @@
 
 namespace WebChemistry\Setup\Directives;
 
+use WebChemistry\Setup\ContentBuilder;
 use WebChemistry\Setup\Directive;
+use WebChemistry\Setup\TemplateValue;
 
 /**
  * @extends Directive<mixed>
@@ -16,8 +18,15 @@ final class DeprecatedDirective extends Directive
 	)
 	{
 		parent::__construct($value);
+	}
 
-		$this->metadata->add('comment', trim(sprintf('@deprecated %s', $this->comment)));
+	public function before(): array
+	{
+		return [
+			new TemplateValue(function (ContentBuilder $builder): void {
+				$builder->comment(trim(sprintf('@deprecated %s', $this->comment)));
+			}),
+		];
 	}
 
 }

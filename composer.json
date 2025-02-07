@@ -1,7 +1,7 @@
 {
     "name": "webchemistry/setup",
     "require": {
-        "php": ">= 8.1",
+        "php": ">= 8.2",
         "nette/utils": "^3.0 || ^4.0"
     },
     "autoload": {
