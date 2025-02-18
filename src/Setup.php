@@ -12,6 +12,7 @@ use WebChemistry\Setup\Generators\PhpLanguageGenerator;
 use WebChemistry\Setup\Generators\ScssVarListLanguageGenerator;
 use WebChemistry\Setup\Generators\ScssLanguageGenerator;
 use WebChemistry\Setup\Helper\SetupHelper;
+use WebChemistry\Setup\Special\Reference;
 use WebChemistry\Setup\Variant\Variants;
 
 final class Setup
@@ -80,6 +81,11 @@ final class Setup
 		}
 
 		$this->running = false;
+	}
+
+	public function reference(string $name): Reference
+	{
+		return new Reference($name);
 	}
 
 	/**
