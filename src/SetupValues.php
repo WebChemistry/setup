@@ -104,7 +104,7 @@ final class SetupValues
 						throw new LogicException(sprintf('Reference %s is not defined.', $value->name));
 					}
 
-					$return[$key] = $return[$value->name];
+					$return[$key] = $value->process($return[$value->name]);
 				}
 			}
 		}
